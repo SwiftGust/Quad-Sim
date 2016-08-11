@@ -471,13 +471,28 @@ Dist_tau = block.InputPort(5).Data(1:3);
 Dist_F   = block.InputPort(5).Data(4:6);
 %------
 
-% CALCULATE MOMENT AND THRUST FORCES
+%% CALCULATE MOMENT AND THRUST FORCES
 % Total Moment due to motor speeds
 % Moment should be in units of N*m
 % The experimental determination of Ct and Cq should be adjusted to
 % model using kg instead of ounces or lb
 % Mb = (quad.dctcq*(w.^2)) + (Dist_tau);  %(dctcq*(w.^2)); % Mb = [tau1 tau2 tau3]'
- tau_motorGyro = [Q*quad.Jm*2*pi/60*(-w1-w3+w2+w4); P*quad.Jm*2*pi/60*(w1+w3-w2-w4); 0]; % Note: 2*pi/60 required to convert from RPM to radians/s
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Mass Change for IJASS_Tarek Paper
+quad.mass = quad.mass + 0.075*Z;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+% Gyroscopic Forces (Precession Forces)
+ tau_motorGyro = [Q*quad.Jm*2*pi/60*(-w1-w3+w2+w4); 
+                  P*quad.Jm*2*pi/60*(w1+w3-w2-w4);
+                  0]; 
+% tau_motorGyro = [0 0 0]';
+              % Note: 2*pi/60 required to convert from RPM to radians/s
+              
+
+% Resulting Torques in Body Frame (Attitude Control)
+% Aerodynamics & Torques of the system.
  Mb = (quad.dctcq*(w.^2))+ tau_motorGyro + (Dist_tau);  % Mb = [tau1 tau2 tau3]'
 
 % Thrust due to motor speed
@@ -491,20 +506,42 @@ OMb_bi = [ 0,-R, Q;
            R, 0,-P;
           -Q, P, 0];
 
+% Angular Acceleration Equation      
 b_omdotb_bi = quad.Jbinv*(Mb-OMb_bi*quad.Jb*omb_bi);
+
+% 2nd Term
+%  J3*q*r - J2*q*r
+%  J1*p*r - J3*p*r
+%  J1*p*q + J2*p*q
+
+% 2nd Term with J inverse
+%  -(J2*q*r - J3*q*r)/J1
+%   (J1*p*r - J3*p*r)/J2
+%   (J1*p*q + J2*p*q)/J3
+% Euler Rotation Matrix Between 
+% Body Rate to Euler Rate
 H_Phi = [1,tan(The)*sin(Phi), tan(The)*cos(Phi);
          0,         cos(Phi),         -sin(Phi);
          0,sin(Phi)/cos(The),cos(Phi)/cos(The)];   
+
+ % Euler Rate     
 Phidot = H_Phi*omb_bi;
 
 % Compute Rotation Matrix
 % We use a Z-Y-X rotation
+% Body to Inertial Frame Rotation matrix
 Rib = [cos(Psi)*cos(The) cos(Psi)*sin(The)*sin(Phi)-sin(Psi)*cos(Phi) cos(Psi)*sin(The)*cos(Phi)+sin(Psi)*sin(Phi);
        sin(Psi)*cos(The) sin(Psi)*sin(The)*sin(Phi)+cos(Psi)*cos(Phi) sin(Psi)*sin(The)*cos(Phi)-cos(Psi)*sin(Phi);
        -sin(The)         cos(The)*sin(Phi)                            cos(The)*cos(Phi)];
+   
+% Inertial to Body Frame Rotation Matrix
 Rbi = Rib';
+% Gravity in Earth Frame;
 ge = [0; 0; -quad.g];
+% Gravity in Body Frame;
 gb = Rbi*ge;
+
+% Disturbance in Inertial Frame to Body Frame
 Dist_Fb = Rbi*Dist_F;
 
 % Compute Velocity and Position derivatives of body frame
@@ -524,11 +561,25 @@ dW = b_dv(3);
 dX = i_dp(1);
 dY = i_dp(2);
 dZ = i_dp(3);
+
 % Rough rule to impose a "ground" boundary...could easily be improved...
-if ((Z<=0) && (dZ<=0)) % better  version then before?
+% Rough Revision 1 : if Vehicle hits the ground stop vehicle
+if ((Z<=0) && (dZ<=0)) % better version then before?
     dZ = 0;
+%     dP = 0;
+%     dQ = 0;
+%     dR = 0;
+%     dPhi = 0;
+%     dTheta = 0;
+%     dPsi = 0;
+%     dU = 0;
+%     dV = 0;
+%     dW = 0;
+%     dX = 0;
+%     dY = 0;
     block.ContStates.Data(12) = 0;
 end
+
 f = [dP dQ dR dPhi dTheta dPsi dU dV dW dX dY dZ].';
   %This is the state derivative vector
 block.Derivatives.Data = f;

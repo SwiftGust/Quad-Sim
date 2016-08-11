@@ -13,7 +13,7 @@ function [] = quadPlots(yout,tout)
 Copyright (C) 2014 D. Hartman, K. Landis, S. Moreno, J. Kim, M. Mehrer
 
 License:
-    This program is free software: you can redistribute it and/or modify
+    This program is free somware: you can redistribute it and/or modify
     it under the terms of the GNU LESSER GENERAL PUBLIC LICENSE as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -49,13 +49,13 @@ Psi   = A(:,6);
 Phi_cmd = A(:,21);
 Theta_cmd = A(:,22);
 Psi_cmd = A(:,23);
-U = A(:,7)*3.2808399; %convert from m/s to ft/s
-V = A(:,8)*3.2808399;
-W = A(:,9)*3.2808399;
-X = A(:,10)*3.2808399; % convert from m to ft
-Y = A(:,11)*3.2808399;
-Z = A(:,12)*3.2808399;
-Z_cmd   = A(:,24)*3.2808399;
+U = A(:,7); %convert from m/s to ft/s
+V = A(:,8);
+W = A(:,9);
+X = A(:,10); % convert from m to ft
+Y = A(:,11);
+Z = A(:,12);
+Z_cmd   = A(:,24);
 w1 = A(:,13);
 w2 = A(:,14);
 w3 = A(:,15);
@@ -65,13 +65,18 @@ mc2 = A(:,18);
 mc3 = A(:,19);
 mc4 = A(:,20);
 if (PC==true)
-X_cmd = A(:,25)*3.2808399;
-Y_cmd = A(:,26)*3.2808399;
+X_cmd = A(:,25);
+Y_cmd = A(:,26);
 end
-% Plots ___________________________________________________________________
+
+%% Wrap Euler Angles 
+Phi = wrap180(Phi*180/pi);
+Theta = wrap180(Theta*180/pi);
+Psi = wrap360(Psi*180/pi);
+%% Plots ___________________________________________________________________
 figure
 subplot(4,3,1)
-plot(T,P,'b')
+plot(T,P*180/pi,'b')
 xlabel('Time (s)')
 ylabel('Angular Velocity (deg/sec)')
 xlim([min(t) max(t)])
@@ -79,7 +84,7 @@ title('P')
 grid on
 
 subplot(4,3,2)
-plot(T,Q,'r')
+plot(T,Q*180/pi,'r')
 xlabel('Time (s)')
 ylabel('Angular Velocity (deg/sec)')
 xlim([min(t) max(t)])
@@ -87,7 +92,7 @@ title('Q')
 grid on
 
 subplot(4,3,3)
-plot(T,R,'g')
+plot(T,R*180/pi,'g')
 xlabel('Time (s)')
 ylabel('Angular Velocity (deg/sec)')
 xlim([min(t) max(t)])
@@ -95,7 +100,7 @@ title('R')
 grid on
 
 subplot(4,3,4)
-plot(T,Phi*180/pi,'b')
+plot(T,Phi,'b')
 hold on
 plot(T,Phi_cmd*180/pi,'k--')
 hold off
@@ -106,7 +111,7 @@ title('Phi')
 grid on
  
 subplot(4,3,5)
-plot(T,Theta*180/pi,'r')
+plot(T,Theta,'r')
 hold on
 plot(T,Theta_cmd*180/pi,'k--')
 hold off
@@ -117,7 +122,7 @@ title('Theta')
 grid on
 
 subplot(4,3,6)
-plot(T,Psi*180/pi,'g')
+plot(T,Psi,'g')
 hold on
 plot(T,Psi_cmd*180/pi,'k--')
 hold off
@@ -130,7 +135,7 @@ grid on
 subplot(4,3,7)
 plot(T,U,'b')
 xlabel('Time (s)')
-ylabel('Velocity (ft/s)')
+ylabel('Velocity (m/s)')
 xlim([min(t) max(t)])
 title('U')
 grid on
@@ -138,7 +143,7 @@ grid on
 subplot(4,3,8)
 plot(T,V,'r')
 xlabel('Time (s)')
-ylabel('Velocity (ft/s)')
+ylabel('Velocity (m/s)')
 xlim([min(t) max(t)])
 title('V')
 grid on
@@ -146,7 +151,7 @@ grid on
 subplot(4,3,9)
 plot(T,W,'g')
 xlabel('Time (s)')
-ylabel('Velocity (ft/s)')
+ylabel('Velocity (m/s)')
 xlim([min(t) max(t)])
 title('W')
 grid on
@@ -159,7 +164,7 @@ plot(T,X_cmd,'k--')
 hold off
 end
 xlabel('Time (s)')
-ylabel('Position (ft)')
+ylabel('Position (m)')
 xlim([min(t) max(t)])
 title('X')
 grid on
@@ -172,7 +177,7 @@ plot(T,Y_cmd,'k--')
 hold off
 end
 xlabel('Time (s)')
-ylabel('Position (ft)')
+ylabel('Position (m)')
 xlim([min(t) max(t)])
 title('Y')
 grid on
@@ -183,7 +188,7 @@ hold on
 plot(T,Z_cmd,'k--')
 hold off
 xlabel('Time (s)')
-ylabel('Position (ft)')
+ylabel('Position (m)')
 xlim([min(t) max(t)])
 title('Z')
 grid on
