@@ -10,6 +10,7 @@ http://youtu.be/kIgwZFGlgio
 
 
 Copyright (C) 2014 D. Hartman, K. Landis, M. Mehrer, S. Moreno, J. Kim
+
 Update: 1.05
 Added sliding mode control of quadrotor.
 
