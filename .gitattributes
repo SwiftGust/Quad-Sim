@@ -1,2 +1,3 @@
-$ cat .gitattributes
-*.rb linguist-language=MATLAB
+*.slx linguist-language=MATLAB
+*.mat linguist-language=MATLAB
+*.2013b linguist-language=MATLAB
