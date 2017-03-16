@@ -13,7 +13,7 @@ Copyright (C) 2014 D. Hartman, K. Landis, M. Mehrer, S. Moreno, J. Kim
 
 Update Ver.1.05:
 Added sliding mode control of the quadrotor.
-(It works very well with Quadrotor Model Interboard-Mutlwii.mat)
+(It only works very well with Quadrotor Model Interboard-Mutlwii.mat)
 
 Copyright (C) 2016 S. Jo
 
